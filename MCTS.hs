@@ -20,7 +20,12 @@ import System.Random
     * scorul
     * copiii.
 -}
-data Tree s a = UndefinedTree
+data Tree s a = NilTree
+              | TreeConstructor { current_state :: s
+                                , action_whose_result :: a
+                                , number_visited :: Int
+                                , score :: Float
+                                , children :: [Tree s a] }
 
 {-
     *** TODO ***
