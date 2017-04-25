@@ -206,11 +206,11 @@ isRoot = undefined
 
     Valoarea ucb1 din filmuleț (constanta C = 2).
 -}
-ucb1 :: Float  -- scorul copilului
-     -> Int    -- numărul de vizitări ale copilului
-     -> Int    -- numărul de vizitări ale părintelui
-     -> Float  -- estimarea
-ucb1  = undefined
+ucb1 :: Float  -- scorul copilului                      // v mediu din formula
+     -> Int    -- numărul de vizitări ale copilului     // n mic din formula
+     -> Int    -- numărul de vizitări ale părintelui    // N mare din formula
+     -> Float  -- estimarea                             // valoarea lui ucb1
+ucb1 v_mean big_n small_n = v_mean + c * (sqrt ((log $ fromIntegral $ big_n) / (fromIntegral small_n))) where c = 2
 
 {-
     *** TODO ***
