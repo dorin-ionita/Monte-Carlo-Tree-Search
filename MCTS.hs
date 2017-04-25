@@ -49,7 +49,9 @@ data Tree s a = TreeConstructor { current_node :: Node s a
 data Crumbs s a = CrumbsConstructor (Node s a) [Tree s a] [Tree s a]
 -- OK: construcotrul pentru crumb contine Node s a si 2 liste, ca in tutorial
 
-data Zipper s a = ZipperConstructor (Tree s a, [Crumb s a], StdGen)
+data Zipper s a = ZipperConstructor {current_tree :: Tree s a 
+                                    , crumb :: [Crumb s a],
+                                    , generator_of_random :: StdGen}
 
 {-
     *** TODO ***
@@ -116,7 +118,7 @@ treeChildren (TreeConstructor {children = ch}) = ch
     Întoarce nodul pe care este centrat zipper-ul.
 -}
 zipperTree :: Zipper s a -> Tree s a
-zipperTree = undefined
+zipperTree (ZipperConstructor {current_tree = der_tree}) = der_tree
 
 {-
     *** TODO ***
@@ -124,7 +126,7 @@ zipperTree = undefined
     Întoarce generatorul de numere aleatoare din interiorul zipper-ului.
 -}
 zipperGen :: Zipper s a -> StdGen
-zipperGen = undefined
+zipperGen (ZipperConstructor {generator_of_random = random_generator}) = random_generator
 
 {-
     *****************
