@@ -20,12 +20,22 @@ import System.Random
     * scorul
     * copiii.
 -}
+data Node s a = Null | NodeConstructor { current_ state :: s
+                                        ,action_whose_result :: a
+                                        ,number_visited :: Int
+                                        ,score :: Float} deriving (Show)
+-- OK : ori e nod null ori e un nod asamblat din campurile mentionate in TODO schelet
+
+instance (Show s, Show a) => Show (Node s a) where
+    show node = case node of
+        Null -> "NOD VID"
+        NodeConstructor {current_state ::s , action_whose_result :: a, number_visited :: Int, score :: Float} -> 
+            "(" ++ current_state + "|" ++ action_whose_result + "|" ++ number_visited ++ "|" ++ score ++ ")"
+
 data Tree s a = NilTree
-              | TreeConstructor { current_state :: s
-                                , action_whose_result :: a
-                                , number_visited :: Int
-                                , score :: Float
-                                , children :: [Tree s a] }
+              | TreeConstructor { current_node :: Node s a
+                                , children :: [Tree s a] } deriving (Show)
+-- OK: am un nod si un copii acestuia
 
 {-
     *** TODO ***
@@ -38,7 +48,11 @@ data Tree s a = NilTree
     se va reține și un generator de numere aleatoare, modificat pe parcursul
     explorării arborelui.
 -}
-data Zipper s a = UndefinedZipper
+data Crumbs s a = CrumbsConstructor (Node s a) [Tree s a] [Tree s a]
+-- OK: construcotrul pentru crumb contine Node s a si 2 liste, ca in tutorial
+
+data Zipper s a = ZipperConstructor (Tree s a, [Crumb s a])
+-- TODO : fa generator de aleatoare
 
 {-
     *** TODO ***
@@ -46,7 +60,11 @@ data Zipper s a = UndefinedZipper
     Instanțiați clasa `Show` cu tipul `Tree s a`.
 -}
 instance (Show s, Show a) => Show (Tree s a) where
-    show = undefined
+    show tree = showing_func 0 tree where
+        showing_func level tree = case tree of {--Imi afiseaza un arbore indentat cu un anumit nivel fata de marginea din stanga--}
+            NilTree -> space level ++ "-\n"
+            TreeConstructor {current_node = c, children = (x:xs)} -> space level ++ show c ++ "\n" ++
+                                                                     if isNull x then {--ceva, altfel altceva--}
 
 {-
     ****************
