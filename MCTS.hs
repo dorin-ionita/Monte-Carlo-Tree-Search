@@ -20,20 +20,18 @@ import System.Random
     * scorul
     * copiii.
 -}
-data Node s a = Null | NodeConstructor { current_ state :: s
-                                        ,action_whose_result :: a
-                                        ,number_visited :: Int
-                                        ,score :: Float} deriving (Show)
+data Node s a = NodeConstructor { current_ state :: s
+                                ,action_whose_result :: a
+                                ,number_visited :: Int
+                                ,score :: Float} deriving (Show)
 -- OK : ori e nod null ori e un nod asamblat din campurile mentionate in TODO schelet
 
 instance (Show s, Show a) => Show (Node s a) where
-    show node = case node of
-        Null -> "NOD VID"
-        NodeConstructor {current_state ::s , action_whose_result :: a, number_visited :: Int, score :: Float} -> 
-            "(" ++ current_state + "|" ++ action_whose_result + "|" ++ number_visited ++ "|" ++ score ++ ")"
+    show (NodeConstructor {current_state ::s , action_whose_result :: a, number_visited :: Int, score :: Float}) -> 
+            "(" ++ (show current_state) ++ "|" ++ (show action_whose_result) ++ "|" ++ (show number_visited) ++ "|" ++ (show score) ++ ")"
+            {- Posibil aici sa existe erori pentru ca , de exemplu current_state si number_visited nu sunt stringuri -}
 
-data Tree s a = NilTree
-              | TreeConstructor { current_node :: Node s a
+data Tree s a = TreeConstructor { current_node :: Node s a
                                 , children :: [Tree s a] } deriving (Show)
 -- OK: am un nod si un copii acestuia
 
@@ -51,8 +49,7 @@ data Tree s a = NilTree
 data Crumbs s a = CrumbsConstructor (Node s a) [Tree s a] [Tree s a]
 -- OK: construcotrul pentru crumb contine Node s a si 2 liste, ca in tutorial
 
-data Zipper s a = ZipperConstructor (Tree s a, [Crumb s a])
--- TODO : fa generator de aleatoare
+data Zipper s a = ZipperConstructor (Tree s a, [Crumb s a], StdGen)
 
 {-
     *** TODO ***
@@ -61,10 +58,11 @@ data Zipper s a = ZipperConstructor (Tree s a, [Crumb s a])
 -}
 instance (Show s, Show a) => Show (Tree s a) where
     show tree = showing_func 0 tree where
-        showing_func level tree = case tree of {--Imi afiseaza un arbore indentat cu un anumit nivel fata de marginea din stanga--}
-            NilTree -> space level ++ "-\n"
-            TreeConstructor {current_node = c, children = (x:xs)} -> space level ++ show c ++ "\n" ++
-                                                                     if isNull x then {--ceva, altfel altceva--}
+        showing_func level (TreeConstructor {current_node = c, children = (x:xs)}) = 
+            (space level) ++ (show c) ++ "\n" ++ (showing_func (level + 1) x) where
+                space level =
+                    | 0 = ""
+                    | level = " " ++ (space (level - 1))
 
 {-
     ****************
@@ -78,7 +76,7 @@ instance (Show s, Show a) => Show (Tree s a) where
     Întoarce starea asociată unui nod.
 -}
 treeState :: Tree s a -> s
-treeState = undefined
+treeState (TreeConstructor {current_node = (NodeConstructor {current_state = state_now})}) = state_now  
 
 {-
     *** TODO ***
@@ -86,7 +84,7 @@ treeState = undefined
     Întoarce starea asociată unui nod.
 -}
 treeAction :: Tree s a -> a
-treeAction = undefined
+treeAction (TreeConstructor {current_node = (NodeConstructor {action_whose_result = action_resultant})}) = action_resultant
 
 {-
     *** TODO ***
@@ -94,7 +92,7 @@ treeAction = undefined
     Întoarce scorul unui nod.
 -}
 treeScore :: Tree s a -> Float
-treeScore = undefined
+treeScore (TreeConstructor {current_node = (NodeConstructor {score = score_of_node})}) = score_of_node
 
 {-
     *** TODO ***
@@ -102,7 +100,7 @@ treeScore = undefined
     Întoarce numărul de vizitări ale unui nod.
 -}
 treeVisits :: Tree s a -> Int
-treeVisits = undefined
+treeVisits (TreeConstructor {current_node = (NodeConstructor {number_visited = visits})})  = visits
 
 {-
     *** TODO ***
@@ -110,7 +108,7 @@ treeVisits = undefined
     Întoarce copiii unui nod.
 -}
 treeChildren :: Tree s a -> [Tree s a]
-treeChildren = undefined
+treeChildren (TreeConstructor {children = ch}) = ch
 
 {-
     *** TODO ***
