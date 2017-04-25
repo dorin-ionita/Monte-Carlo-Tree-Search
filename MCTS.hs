@@ -20,19 +20,19 @@ import System.Random
     * scorul
     * copiii.
 -}
-data Node s a = NodeConstructor { current_ state :: s
+data Node s a = NodeConstructor { current_state :: s
                                 ,action_whose_result :: a
                                 ,number_visited :: Int
-                                ,score :: Float} deriving (Show)
+                                ,score :: Float}
 -- OK : ori e nod null ori e un nod asamblat din campurile mentionate in TODO schelet
 
 instance (Show s, Show a) => Show (Node s a) where
-    show (NodeConstructor {current_state ::s , action_whose_result :: a, number_visited :: Int, score :: Float}) -> 
-            "(" ++ (show current_state) ++ "|" ++ (show action_whose_result) ++ "|" ++ (show number_visited) ++ "|" ++ (show score) ++ ")"
+    show (NodeConstructor {current_state = state , action_whose_result = action, number_visited = visits, score = scor}) = 
+            "(" ++ (show state) ++ "|" ++ (show action) ++ "|" ++ (show visits) ++ "|" ++ (show scor) ++ ")"
             {- Posibil aici sa existe erori pentru ca , de exemplu current_state si number_visited nu sunt stringuri -}
 
 data Tree s a = TreeConstructor { current_node :: Node s a
-                                , children :: [Tree s a] } deriving (Show)
+                                , children :: [Tree s a] }
 -- OK: am un nod si un copii acestuia
 
 {-
@@ -50,7 +50,7 @@ data Crumbs s a = CrumbsConstructor (Node s a) [Tree s a] [Tree s a]
 -- OK: construcotrul pentru crumb contine Node s a si 2 liste, ca in tutorial
 
 data Zipper s a = ZipperConstructor {current_tree :: Tree s a 
-                                    , crumb :: [Crumb s a],
+                                    , crumb :: [Crumbs s a]
                                     , generator_of_random :: StdGen}
 
 {-
@@ -58,13 +58,20 @@ data Zipper s a = ZipperConstructor {current_tree :: Tree s a
 
     Instanțiați clasa `Show` cu tipul `Tree s a`.
 -}
+space :: Int -> String
+space level
+    | level == 0 = ""
+    | otherwise = " " ++ (space (level - 1))
+
 instance (Show s, Show a) => Show (Tree s a) where
-    show tree = showing_func 0 tree where
+    show tree = (showing_func 0 tree) where
+{-        showing_func :: Int -> Tree -> String-}
         showing_func level (TreeConstructor {current_node = c, children = (x:xs)}) = 
-            (space level) ++ (show c) ++ "\n" ++ (showing_func (level + 1) x) where
-                space level =
+            (space level) ++ (show c) ++ "\n" ++ (showing_func (level + 1) x) {-where
+                space :: Int -> String
+                space level
                     | 0 = ""
-                    | level = " " ++ (space (level - 1))
+                    | level = " " ++ (space (level - 1))-}
 
 {-
     ****************
