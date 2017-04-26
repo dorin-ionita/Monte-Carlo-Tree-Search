@@ -150,11 +150,21 @@ zipperGen (ZipperConstructor {generator_of_random = random_generator}) = random_
 expand :: (s -> [(a, s)])  -- Generatorul stărilor succesoare
        -> s                -- Starea inițială
        -> Tree s a         -- Arborele de căutare
-expand = undefined
+expand generator initial_state = expand_helper generator initial_state initial_action where
+    initial_action = fst $ (generator initial_state) !! 0
+    expand_helper :: (s -> [(a, s)]) -> s -> a -> Tree s a
+    expand_helper generator state action = (TreeConstructor {current_node = (NodeConstructor {current_state = state, action_whose_result = action, number_visited = 0, score = 0})
+                                                                , children = [(expand_helper generator (snd $ next_state) (fst $ next_state)) | next_state <- generator state]})
+
+{-TreeConstructor {current_node = (NodeConstructor {current_state = initial_state
+                                                                                    , number_visited = 0,
+                                                                                    , score = 0})
+                                                    , children = [  |(children_action, children_state) <- generator initial_state]}-}
+{--Deci ce as vrea eu sa fac ar fi sa iau starea initiala, din care sa derivez starile copii. Fiecare stare copil devine la randul ei
+o stare initiala si asa mai departe. Fiecare nod va contine doar starea actuala si actiunea din care a provenit--}
 
 {-
     *** TODO ***
-
     Explorează arborele, alegând la fiecare pas un succesor aleator,
     până la atingerea unei stări terminale (victorie/ remiză).
 
