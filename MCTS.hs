@@ -174,9 +174,17 @@ o stare initiala si asa mai departe. Fiecare nod va contine doar starea actuala 
     * semnificația stării terminale (victorie/ remiză)
     * varianta finală a generatorului de numere aleatoare.
 -}
-rolloutTree :: GameState s a => Tree s a -> StdGen -> ([Tree s a], Outcome, StdGen)
-rolloutTree = undefined
+isLeaf :: Tree s a -> Bool
+isLeaf (TreeConstructor node children) = null children
 
+rolloutTree :: GameState s a => Tree s a -> StdGen -> ([Tree s a], Outcome, StdGen)
+rolloutTree (TreeConstructor {current_node = node, children = ch}) random_function = rolloutTree_help (TreeConstructor {current_node = node, children = ch}) random_function [] where
+    rolloutTree_help :: GameState s a => Tree s a -> StdGen -> [Tree s a] -> ([Tree s a], Outcome, StdGen)
+    rolloutTree_help (TreeConstructor {current_node = node, children = ch}) random_function list =
+        if isLeaf (TreeConstructor {current_node = node, children = ch}) then (list, outcome $ treeState (TreeConstructor {current_node = node, children = ch}), random_function)
+            else rolloutTree_help (ch !! random_number) new_random_generator ((TreeConstructor {current_node = node, children = ch}) : list) where
+                random_number = (fst (next $ random_function)) `mod` (length ch)
+                new_random_generator = snd (next $ random_function)
 {-
     *** TODO ***
 
