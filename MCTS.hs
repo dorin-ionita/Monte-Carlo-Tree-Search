@@ -64,11 +64,14 @@ space level
     | otherwise = " " ++ (space (level - 1))
 
 instance (Show s, Show a) => Show (Tree s a) where
-    show tree = (showing_func 0 tree) where
+    show tree = (showing_func 0 tree True) where
 {-        showing_func :: Int -> Tree -> String-}
-        showing_func level (TreeConstructor {current_node = c, children = (x:xs)}) = 
-            (space level) ++ (show c) ++ "\n" ++ (showing_func (level + 1) x)
-        showing_func level (TreeConstructor {current_node = c, children = []}) =
+        showing_func level (TreeConstructor {current_node = c, children = (x:xs)}) True = 
+            --(space level) ++ (show c) ++ "\n" ++ 
+            (showing_func level (TreeConstructor c xs) False) ++ (showing_func (level + 1) x False)
+        showing_func level (TreeConstructor {current_node = c, children = (x:xs)}) False =
+            (showing_func level (TreeConstructor c xs) False) ++ (showing_func (level + 1) x False)
+        showing_func level (TreeConstructor {current_node = c, children = []}) _ =
             (space level) ++ (show c) ++ "\n"
              {-where
                 space :: Int -> String
