@@ -67,7 +67,10 @@ instance (Show s, Show a) => Show (Tree s a) where
     show tree = (showing_func 0 tree) where
 {-        showing_func :: Int -> Tree -> String-}
         showing_func level (TreeConstructor {current_node = c, children = (x:xs)}) = 
-            (space level) ++ (show c) ++ "\n" ++ (showing_func (level + 1) x) {-where
+            (space level) ++ (show c) ++ "\n" ++ (showing_func (level + 1) x)
+        showing_func level (TreeConstructor {current_node = c, children = []}) =
+            (space level) ++ (show c) ++ "\n"
+             {-where
                 space :: Int -> String
                 space level
                     | 0 = ""
