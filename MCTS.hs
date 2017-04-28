@@ -236,7 +236,9 @@ getZipper tree random_generator = ZipperConstructor tree [NoCrumbs] random_gener
     Verifică dacă zipper-ul este centrat pe rădăcina arborelui.
 -}
 isRoot :: Zipper s a -> Bool
-isRoot = undefined
+isRoot (ZipperConstructor { crumb = [NoCrumbs] })  = True
+isRoot _ = False
+
 
 {-
     *** TODO ***
@@ -247,7 +249,7 @@ ucb1 :: Float  -- scorul copilului                      // v mediu din formula
      -> Int    -- numărul de vizitări ale copilului     // n mic din formula
      -> Int    -- numărul de vizitări ale părintelui    // N mare din formula
      -> Float  -- estimarea                             // valoarea lui ucb1
-ucb1 v_mean big_n small_n = v_mean + c * (sqrt ((log $ fromIntegral $ big_n) / (fromIntegral small_n))) where c = 2
+ucb1 v_mean small_n big_n = (v_mean / (fromIntegral $ small_n))+ c * (sqrt ((log $ fromIntegral $ big_n) / (fromIntegral small_n))) where c = 2
 
 {-
     *** TODO ***
