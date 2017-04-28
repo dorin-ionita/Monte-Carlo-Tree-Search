@@ -6,6 +6,7 @@ import GameState
 
 import Prelude hiding (traverse)
 import System.Random
+import Data.List
 
 {-
     *** TODO ***
@@ -46,7 +47,7 @@ data Tree s a = TreeConstructor { current_node :: Node s a
     se va reține și un generator de numere aleatoare, modificat pe parcursul
     explorării arborelui.
 -}
-data Crumbs s a = CrumbsConstructor (Node s a) [Tree s a] [Tree s a]
+data Crumbs s a = NoCrumbs | CrumbsConstructor (Node s a) [Tree s a] [Tree s a]
 -- OK: construcotrul pentru crumb contine Node s a si 2 liste, ca in tutorial
 
 data Zipper s a = ZipperConstructor {current_tree :: Tree s a 
@@ -199,8 +200,20 @@ rolloutTree (TreeConstructor {current_node = node, children = ch}) random_functi
 
     Hint: `maximumBy` și `comparing`.
 -}
+copilometru :: Tree s a -> Tree s a -> Ordering
+copilometru (TreeConstructor {current_node = (NodeConstructor {number_visited = visits1, score = scor1})})
+            (TreeConstructor {current_node = (NodeConstructor {number_visited = visits2, score = scor2})})
+    | value1 > value2 = GT
+    | value1 < value2 = LT
+    | otherwise = EQ
+    where
+        value1 = scor1 / (fromIntegral visits1)
+        value2 = scor2 / (fromIntegral visits2)
+
 bestChild :: Tree s a -> Tree s a
-bestChild = undefined
+bestChild (TreeConstructor {children = ch}) = bestChild_helper ch where
+    bestChild_helper :: [Tree s a] -> Tree s a
+    bestChild_helper = maximumBy copilometru-- point-free programming
 
 {-
     *******************
@@ -215,7 +228,7 @@ bestChild = undefined
     de numere aleatoare precizat.
 -}
 getZipper :: Tree s a -> StdGen -> Zipper s a
-getZipper = undefined
+getZipper tree random_generator = ZipperConstructor tree [NoCrumbs] random_generator
 
 {-
     *** TODO ***
