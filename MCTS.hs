@@ -304,11 +304,13 @@ select zipper = (ZipperConstructor best_child new_crumbs randomizer) where
                                 
 {-
     *** TODO ***
-
     Aplică repetat `select` până la atingerea unui nod nevizitat sau terminal.
 -}
 traverse :: (Eq s, GameState s a) => Zipper s a -> Zipper s a
-traverse = undefined
+traverse zipper
+    | (treeVisits $ zipperTree $ zipper) == 0 = zipper
+    | null $ treeChildren $ zipperTree $ zipper = zipper
+    | otherwise = select zipper
 
 {-
     *** TODO ***
