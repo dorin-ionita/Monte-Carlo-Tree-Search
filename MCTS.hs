@@ -151,6 +151,12 @@ zipperCrumbs (ZipperConstructor {crumb = list_of_crumbs}) = list_of_crumbs
 nodeCrumbs :: Crumbs s a -> Node s a
 nodeCrumbs (CrumbsConstructor node left_brotha right_brotha) = node
 
+leftBrotha :: Crumbs s a -> [Tree s a]
+leftBrotha (CrumbsConstructor _ left_brotha _ ) = left_brotha
+
+rightBrotha :: Crumbs s a -> [Tree s a]
+rightBrotha (CrumbsConstructor _ _ right_brotha) = right_brotha
+
 {-
     *****************
     Funcții pe arbori
@@ -340,8 +346,11 @@ rolloutZipper = undefined
     Urcă un nivel în arbore.
 -}
 toParent :: Zipper s a -> Zipper s a
-toParent = undefined
-
+toParent zipper = (ZipperConstructor new_tree new_crumb (zipperGen $ zipper)) where
+    new_tree = (TreeConstructor current_node children) where
+        current_node = nodeCrumbs $ ((zipperCrumbs $ zipper) !! 0)
+        children = (leftBrotha $ ((zipperCrumbs $ zipper) !! 0)) ++ [zipperTree $ zipper] ++ (rightBrotha $ ((zipperCrumbs $ zipper) !! 0))
+    new_crumb = drop 1 $ zipperCrumbs $ zipper
 {-
     *** TODO ***
 
