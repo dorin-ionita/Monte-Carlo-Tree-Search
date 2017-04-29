@@ -337,8 +337,25 @@ traverse zipper
     * Pentru remiză, se utilizează scorul din obiectul `Outcome` împărțit
       la numărul de jucători, și `Nothing`.
 -}
+fst3 :: (a, b, c) -> a
+fst3 (x, _, _) = x
+
+snd3 :: (a, b, c) -> b
+snd3 (_,x, _) = x
+
+trd3 :: (a, b, c) -> c
+trd3 (_,_,x) = x 
+
+getPointsFromOutcome :: Outcome -> Float
+getPointsFromOutcome (Win x) = x
+getPointsFromOutcome (Draw x) = x
+
 rolloutZipper :: GameState s a => Zipper s a -> (Float, Maybe Int, Zipper s a)
-rolloutZipper = undefined
+rolloutZipper zipper = (updated_score, player, updated_zipper) where
+    updated_score = getPointsFromOutcome $ snd3 $ rolloutTree (zipperTree zipper) (zipperGen zipper)
+    player = Just $ playerIndex $ treeState $ zipperTree $ zipper
+    updated_zipper = (ZipperConstructor (zipperTree $ zipper) (zipperCrumbs $ zipper) (trd3 $ rolloutTree (zipperTree zipper) (zipperGen zipper)))
+
 
 {-
     *** TODO ***
