@@ -48,7 +48,7 @@ data Tree s a = TreeConstructor { current_node :: Node s a
     explorării arborelui.
 -}
 data Crumbs s a = NoCrumbs | CrumbsConstructor (Node s a) [Tree s a] [Tree s a]
--- OK: construcotrul pentru crumb contine Node s a si 2 liste, ca in tutorial
+-- OK: construcotrul pentru crumb contine Node s a si 2 liste -> fratii din st si dr
 
 data Zipper s a = ZipperConstructor {current_tree :: Tree s a 
                                     , crumb :: [Crumbs s a]
@@ -118,6 +118,9 @@ treeScore (TreeConstructor {current_node = (NodeConstructor {score = score_of_no
 treeVisits :: Tree s a -> Int
 treeVisits (TreeConstructor {current_node = (NodeConstructor {number_visited = visits})})  = visits
 
+treeNode :: Tree s a -> Node s a
+treeNode (TreeConstructor {current_node = node}) = node
+
 {-
     *** TODO ***
 
@@ -141,6 +144,12 @@ zipperTree (ZipperConstructor {current_tree = der_tree}) = der_tree
 -}
 zipperGen :: Zipper s a -> StdGen
 zipperGen (ZipperConstructor {generator_of_random = random_generator}) = random_generator
+
+zipperCrumbs :: Zipper s a -> [Crumbs s a]
+zipperCrumbs (ZipperConstructor {crumb = list_of_crumbs}) = list_of_crumbs
+
+nodeCrumbs :: Crumbs s a -> Node s a
+nodeCrumbs (CrumbsConstructor node left_brotha right_brotha) = node
 
 {-
     *****************
@@ -251,6 +260,9 @@ ucb1 :: Float  -- scorul copilului                      // v mediu din formula
      -> Float  -- estimarea                             // valoarea lui ucb1
 ucb1 v_mean small_n big_n = (v_mean / (fromIntegral $ small_n))+ c * (sqrt ((log $ fromIntegral $ big_n) / (fromIntegral small_n))) where c = 2
 
+ucb1_wrapper :: (Float, Int, Int) -> Float
+ucb1_wrapper (a, b, c) = ucb1 a b c 
+
 {-
     *** TODO ***
 
@@ -261,9 +273,35 @@ ucb1 v_mean small_n big_n = (v_mean / (fromIntegral $ small_n))+ c * (sqrt ((log
     Atenție! Așa cum rezultă și din filmuleț, un nod nevizitat are valoarea ucb1
     infinită, și va fi întotdeauna ales în defavoarea altor noduri deja vizitate.
 -}
-select :: Eq s => Zipper s a -> Zipper s a
-select = undefined
+order_function :: Int -> Tree s a -> Tree s a -> Ordering
+order_function visits_parent tree1 tree2
+    | ((treeVisits tree1) /= 0) = GT
+    | ((treeVisits tree2) /= 0) = LT
+    | ucb1 (treeScore tree1) (treeVisits tree2) visits_parent > ucb1 (treeScore tree2) (treeVisits tree2) visits_parent = GT
+    | ucb1 (treeScore tree1) (treeVisits tree2) visits_parent < ucb1 (treeScore tree2) (treeVisits tree2) visits_parent = LT
+    | otherwise = EQ
 
+instance Eq s => Eq (Tree s a) where
+    (TreeConstructor (NodeConstructor s1 a1 n1 sc1) ch1) == (TreeConstructor (NodeConstructor s2 a2 n2 sc2) ch2) = s1 == s2
+
+select :: Eq s => Zipper s a -> Zipper s a
+select zipper = (ZipperConstructor best_child new_crumbs randomizer) where
+    randomizer = zipperGen zipper
+    new_crumbs = (new_crumb : zipperCrumbs zipper) where
+        new_crumb = (CrumbsConstructor (treeNode $ zipperTree zipper) left_brotha right_brotha) where
+            {-left_brotha = take (best_child `elemIndex` (treeChildren $ zipperTree zipper)) (treeChildren $ zipperTree zipper) where-}
+            left_brotha = take (index $ best_child `elemIndex` (treeChildren $ zipperTree zipper)) (treeChildren $ zipperTree zipper) where
+                index :: Maybe Int -> Int
+                index Nothing = -1
+                index (Just x) = x
+            right_brotha = drop ((index $ best_child `elemIndex` (treeChildren $ zipperTree zipper)) + 1) (treeChildren $ zipperTree zipper) where
+                --best_child = maximumBy (order_function $ treeVisits $ zipperTree zipper) (treeChildren $ zipperTree zipper)
+                index :: Maybe Int -> Int
+                index Nothing = -1
+                index (Just x) = x
+    best_child = maximumBy (order_function $ treeVisits $ zipperTree zipper) (treeChildren $ zipperTree zipper)
+
+                                
 {-
     *** TODO ***
 
