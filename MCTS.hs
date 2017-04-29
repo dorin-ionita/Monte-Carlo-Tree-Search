@@ -353,7 +353,7 @@ getPointsFromOutcome (Draw x) = x
 rolloutZipper :: GameState s a => Zipper s a -> (Float, Maybe Int, Zipper s a)
 rolloutZipper zipper = (updated_score, player, updated_zipper) where
     updated_score = getPointsFromOutcome $ snd3 $ rolloutTree (zipperTree zipper) (zipperGen zipper)
-    player = Just $ playerIndex $ treeState $ zipperTree $ zipper
+    player = (Just (playerIndex $ treeState $ zipperTree $ zipper))
     updated_zipper = (ZipperConstructor (zipperTree $ zipper) (zipperCrumbs $ zipper) (trd3 $ rolloutTree (zipperTree zipper) (zipperGen zipper)))
 
 
@@ -384,8 +384,34 @@ toParent zipper = (ZipperConstructor new_tree new_crumb (zipperGen $ zipper)) wh
     
     Zipper-ul final este centrat pe rădăcină.
 -}
+stateNode :: Node s a -> s
+stateNode (NodeConstructor {current_state = state}) = state
+
+actionNode :: Node s a -> a
+actionNode (NodeConstructor {action_whose_result = action}) = action
+
+visitsNode :: Node s a -> Int
+visitsNode (NodeConstructor {number_visited = visit}) = visit
+
+scoreNode :: Node s a -> Float
+scoreNode (NodeConstructor {score = scor}) = scor
+
 backProp :: GameState s a => Float -> Maybe Int -> Zipper s a -> Zipper s a
-backProp = undefined
+{-- rolloutZipper intoarce scorul cu care vor fi actualizate nodurile pe calea spre radacina--}
+{--numarul jucatorului pentru care se realizeaza actualizarea --}
+{--noul zipper, actualizat cu generatorul de numere aleatoare intors de `rolloutTree`--}
+backProp scor player zipper =
+    if null $ zipperCrumbs $ zipper then zipper --Trebuie modificat, e inconsistent cu celelalt caz, varful ar ramane nemodificat
+        else (ZipperConstructor new_tree new_crumbs random_generator) where 
+            random_generator = zipperGen $ zipper
+            new_tree = (TreeConstructor current_node children) where
+                current_node = (NodeConstructor new_state new_action new_visits new_score) where
+                    new_state = stateNode $ nodeCrumbs $ (zipperCrumbs $ zipper) !! 0
+                    new_action = actionNode $ nodeCrumbs $ (zipperCrumbs $ zipper) !! 0
+                    new_visits = (visitsNode $ nodeCrumbs $ (zipperCrumbs $ zipper) !! 0) + 1
+                    new_score = (scoreNode $ nodeCrumbs $ (zipperCrumbs $ zipper) !! 0) + scor
+                children = (leftBrotha $ ((zipperCrumbs $ zipper) !! 0)) ++ [zipperTree $ zipper] ++ (rightBrotha $ ((zipperCrumbs $ zipper) !! 0))
+            new_crumbs = drop 1 $ zipperCrumbs $ zipper
 
 {-
     *** TODO ***
