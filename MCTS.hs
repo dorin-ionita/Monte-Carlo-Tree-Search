@@ -311,7 +311,7 @@ traverse zipper
     | (treeVisits $ zipperTree $ zipper) == 0 = zipper
     | null $ treeChildren $ zipperTree $ zipper = zipper
     | otherwise = select zipper
-
+--
 {-
     *** TODO ***
 
