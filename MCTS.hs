@@ -281,8 +281,8 @@ ucb1_wrapper (a, b, c) = ucb1 a b c
 -}
 order_function :: Int -> Tree s a -> Tree s a -> Ordering
 order_function visits_parent tree1 tree2
-    | ((treeVisits tree1) /= 0) = GT
-    | ((treeVisits tree2) /= 0) = LT
+    | ((treeVisits tree1) == 0) = GT
+    | ((treeVisits tree2) == 0) = LT
     | ucb1 (treeScore tree1) (treeVisits tree2) visits_parent > ucb1 (treeScore tree2) (treeVisits tree2) visits_parent = GT
     | ucb1 (treeScore tree1) (treeVisits tree2) visits_parent < ucb1 (treeScore tree2) (treeVisits tree2) visits_parent = LT
     | otherwise = EQ
