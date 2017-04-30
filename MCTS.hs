@@ -396,20 +396,35 @@ visitsNode (NodeConstructor {number_visited = visit}) = visit
 scoreNode :: Node s a -> Float
 scoreNode (NodeConstructor {score = scor}) = scor
 
+helper :: Float -> Maybe Int -> Zipper s a -> Zipper s a
+helper scor player zipper = (ZipperConstructor new_tree2 [] (zipperGen $ zipper)) where 
+    new_tree2 = (TreeConstructor current_node children) where
+        current_node = (NodeConstructor state action visits score) where
+            state = stateNode $ treeNode $ zipperTree $ zipper
+            action = actionNode $ treeNode $ zipperTree $ zipper
+            visits = (visitsNode $ treeNode $ zipperTree $ zipper) + 1
+            score = (scoreNode $ treeNode $ zipperTree $ zipper) + scor
+        children = treeChildren $ zipperTree $ zipper
+
 backProp :: GameState s a => Float -> Maybe Int -> Zipper s a -> Zipper s a
 backProp scor player zipper =
-    if null $ zipperCrumbs $ zipper then zipper --Trebuie modificat, e inconsistent cu celelalt caz, varful ar ramane nemodificat
-        else backProp (fst3 $ rolloutZipper $ new_zipper) (snd3 $ rolloutZipper $ new_zipper) (trd3 $ rolloutZipper $ new_zipper) where 
+    if null $ zipperCrumbs $ zipper 
+        then helper scor player zipper
+        else backProp scor player new_zipper where 
             new_zipper = (ZipperConstructor new_tree new_crumbs random_generator)
             random_generator = zipperGen $ zipper
-            new_tree = (TreeConstructor current_node children) where
-                current_node = (NodeConstructor new_state new_action new_visits new_score) where
-                    new_state = stateNode $ nodeCrumbs $ ((zipperCrumbs $ zipper) !! 0)
-                    new_action = actionNode $ nodeCrumbs $ ((zipperCrumbs $ zipper) !! 0)
-                    new_visits = (visitsNode $ nodeCrumbs $ ((zipperCrumbs $ zipper) !! 0)) + 1
-                    new_score = (scoreNode $ nodeCrumbs $ ((zipperCrumbs $ zipper) !! 0)) + scor
-                children = (leftBrotha $ ((zipperCrumbs $ zipper) !! 0)) ++ [zipperTree $ zipper] ++ (rightBrotha $ ((zipperCrumbs $ zipper) !! 0))
             new_crumbs = drop 1 $ zipperCrumbs $ zipper
+            new_tree = (TreeConstructor current_node children) where
+                current_node = nodeCrumbs $ ((zipperCrumbs $ zipper) !! 0)
+                children = (leftBrotha $ ((zipperCrumbs $ zipper) !! 0)) ++ [current_tree] ++ (rightBrotha $ ((zipperCrumbs $ zipper) !! 0)) where
+                    current_tree = (TreeConstructor modified_current_node current_children) where
+                        current_children = treeChildren $ zipperTree $ zipper
+                        modified_current_node = (NodeConstructor new_state new_action new_visits new_score) where
+                            new_state = stateNode $ treeNode $ zipperTree $ zipper
+                            new_action = actionNode $ treeNode $ zipperTree $ zipper
+                            new_visits = (visitsNode $ treeNode $ zipperTree $ zipper) + 1
+                            new_score = (scoreNode $ treeNode $ zipperTree $ zipper) + scor
+{-problema : copii nu sunt updatati aici -}
 
 {-
     *** TODO ***
