@@ -432,8 +432,11 @@ backProp scor player zipper =
     Realizează o iterație completă a MCTS, incluzând toate etapele, pornind
     de la un nod oarecare din arbore și finalizând pe rădăcină.
 -}
+backPropConverter :: GameState s a => (Float, Maybe Int, Zipper s a) -> Zipper s a
+backPropConverter (x, y, z) = backProp x y z 
+
 exploreOne :: (Eq s, GameState s a) => Zipper s a -> Zipper s a
-exploreOne = undefined
+exploreOne zipper = backPropConverter $ rolloutZipper $ traverse $ zipper
 
 {-
     *** TODO ***
@@ -441,7 +444,8 @@ exploreOne = undefined
     Realizează un număr dat de iterații complete ale MCTS.
 -}
 exploreMany :: (Eq s, GameState s a) => Int -> Zipper s a -> Zipper s a
-exploreMany = undefined
+exploreMany 0 zipper = zipper
+exploreMany x zipper = exploreMany (x - 1) $ exploreOne zipper
 
 {-
     *** TODO ***
