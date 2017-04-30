@@ -465,4 +465,6 @@ exploreMany x zipper = exploreMany (x - 1) $ exploreOne zipper
     utilizând `bestChild`.
 -}
 choose :: (Eq s, GameState s a) => Int -> s -> StdGen -> (a, s)
-choose = undefined
+choose no_of_it state random_generator = (best_action, best_state) where 
+    best_action = treeAction $ zipperTree $ select $ exploreMany no_of_it $ getZipper (expand successors state) random_generator
+    best_state = treeState $ zipperTree $ select $ exploreMany no_of_it $ getZipper (expand successors state) random_generator
