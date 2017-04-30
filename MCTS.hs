@@ -47,7 +47,7 @@ data Tree s a = TreeConstructor { current_node :: Node s a
     se va reține și un generator de numere aleatoare, modificat pe parcursul
     explorării arborelui.
 -}
-data Crumbs s a = NoCrumbs | CrumbsConstructor (Node s a) [Tree s a] [Tree s a]
+data Crumbs s a = CrumbsConstructor (Node s a) [Tree s a] [Tree s a]
 -- OK: construcotrul pentru crumb contine Node s a si 2 liste -> fratii din st si dr
 
 data Zipper s a = ZipperConstructor {current_tree :: Tree s a 
@@ -243,7 +243,7 @@ bestChild (TreeConstructor {children = ch}) = bestChild_helper ch where
     de numere aleatoare precizat.
 -}
 getZipper :: Tree s a -> StdGen -> Zipper s a
-getZipper tree random_generator = ZipperConstructor tree [NoCrumbs] random_generator
+getZipper tree random_generator = ZipperConstructor tree [] random_generator
 
 {-
     *** TODO ***
@@ -251,7 +251,7 @@ getZipper tree random_generator = ZipperConstructor tree [NoCrumbs] random_gener
     Verifică dacă zipper-ul este centrat pe rădăcina arborelui.
 -}
 isRoot :: Zipper s a -> Bool
-isRoot (ZipperConstructor { crumb = [NoCrumbs] })  = True
+isRoot (ZipperConstructor { crumb = [] })  = True
 isRoot _ = False
 
 
@@ -397,19 +397,17 @@ scoreNode :: Node s a -> Float
 scoreNode (NodeConstructor {score = scor}) = scor
 
 backProp :: GameState s a => Float -> Maybe Int -> Zipper s a -> Zipper s a
-{-- rolloutZipper intoarce scorul cu care vor fi actualizate nodurile pe calea spre radacina--}
-{--numarul jucatorului pentru care se realizeaza actualizarea --}
-{--noul zipper, actualizat cu generatorul de numere aleatoare intors de `rolloutTree`--}
 backProp scor player zipper =
     if null $ zipperCrumbs $ zipper then zipper --Trebuie modificat, e inconsistent cu celelalt caz, varful ar ramane nemodificat
-        else (ZipperConstructor new_tree new_crumbs random_generator) where 
+        else backProp (fst3 $ rolloutZipper $ new_zipper) (snd3 $ rolloutZipper $ new_zipper) (trd3 $ rolloutZipper $ new_zipper) where 
+            new_zipper = (ZipperConstructor new_tree new_crumbs random_generator)
             random_generator = zipperGen $ zipper
             new_tree = (TreeConstructor current_node children) where
                 current_node = (NodeConstructor new_state new_action new_visits new_score) where
-                    new_state = stateNode $ nodeCrumbs $ (zipperCrumbs $ zipper) !! 0
-                    new_action = actionNode $ nodeCrumbs $ (zipperCrumbs $ zipper) !! 0
-                    new_visits = (visitsNode $ nodeCrumbs $ (zipperCrumbs $ zipper) !! 0) + 1
-                    new_score = (scoreNode $ nodeCrumbs $ (zipperCrumbs $ zipper) !! 0) + scor
+                    new_state = stateNode $ nodeCrumbs $ ((zipperCrumbs $ zipper) !! 0)
+                    new_action = actionNode $ nodeCrumbs $ ((zipperCrumbs $ zipper) !! 0)
+                    new_visits = (visitsNode $ nodeCrumbs $ ((zipperCrumbs $ zipper) !! 0)) + 1
+                    new_score = (scoreNode $ nodeCrumbs $ ((zipperCrumbs $ zipper) !! 0)) + scor
                 children = (leftBrotha $ ((zipperCrumbs $ zipper) !! 0)) ++ [zipperTree $ zipper] ++ (rightBrotha $ ((zipperCrumbs $ zipper) !! 0))
             new_crumbs = drop 1 $ zipperCrumbs $ zipper
 
