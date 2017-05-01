@@ -363,7 +363,7 @@ rolloutZipper zipper = (updated_score, player, updated_zipper) where
         if (isWin $ snd3 $ rolloutTree (zipperTree zipper) (zipperGen zipper)) then getPointsFromOutcome $ snd3 $ rolloutTree (zipperTree zipper) (zipperGen zipper)
             else (getPointsFromOutcome $ snd3 $ rolloutTree (zipperTree zipper) (zipperGen zipper)) / (fromIntegral $ maxPlayers $ treeState $ zipperTree $ zipper)
     player = 
-        if (isWin $ snd3 $ rolloutTree (zipperTree zipper) (zipperGen zipper)) then (Just (playerIndex $ treeState $ zipperTree $ zipper))
+        if (isWin $ snd3 $ rolloutTree (zipperTree zipper) (zipperGen zipper)) then (Just ((playerIndex $ treeState $ zipperTree $ zipper) + 1))
             else Nothing
     updated_zipper = (ZipperConstructor (zipperTree $ zipper) (zipperCrumbs $ zipper) (trd3 $ rolloutTree (zipperTree zipper) (zipperGen zipper)))
 
