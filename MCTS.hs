@@ -319,11 +319,19 @@ select zipper = (ZipperConstructor best_child new_crumbs randomizer) where
     *** TODO ***
     Aplică repetat `select` până la atingerea unui nod nevizitat sau terminal.
 -}
-traverse :: (Eq s, GameState s a) => Zipper s a -> Zipper s a
+{-traverse :: (Eq s, GameState s a) => Zipper s a -> Zipper s a
 traverse zipper
     | (treeVisits $ zipperTree $ zipper) == 0 = zipper
     | null $ treeChildren $ zipperTree $ zipper = zipper
-    | otherwise = traverse $ select $ zipper
+    | otherwise = traverse $ select $ zipper-}
+
+traverse :: (Eq s, GameState s a) => Zipper s a -> Zipper s a
+traverse = until (test_function) (do_function) where
+    do_function :: (Eq s, GameState s a) => Zipper s a -> Zipper s a
+    do_function = select
+    test_function :: (Eq s, GameState s a) => Zipper s a -> Bool
+    test_function zipper = ((treeVisits $ zipperTree $ zipper) == 0) || (null $ treeChildren $ zipperTree $ zipper)
+
 --
 {-
     *** TODO ***
