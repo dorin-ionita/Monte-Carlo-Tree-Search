@@ -316,7 +316,7 @@ traverse :: (Eq s, GameState s a) => Zipper s a -> Zipper s a
 traverse zipper
     | (treeVisits $ zipperTree $ zipper) == 0 = zipper
     | null $ treeChildren $ zipperTree $ zipper = zipper
-    | otherwise = select zipper
+    | otherwise = traverse $ select $ zipper
 --
 {-
     *** TODO ***
