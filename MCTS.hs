@@ -346,15 +346,27 @@ snd3 (_,x, _) = x
 trd3 :: (a, b, c) -> c
 trd3 (_,_,x) = x 
 
+isWin :: Outcome -> Bool
+isWin (Win x) = True
+isWin _ = False
+
 getPointsFromOutcome :: Outcome -> Float
 getPointsFromOutcome (Win x) = x
 getPointsFromOutcome (Draw x) = x
 
 rolloutZipper :: GameState s a => Zipper s a -> (Float, Maybe Int, Zipper s a)
 rolloutZipper zipper = (updated_score, player, updated_zipper) where
-    updated_score = getPointsFromOutcome $ snd3 $ rolloutTree (zipperTree zipper) (zipperGen zipper)
+{-    updated_score = getPointsFromOutcome $ snd3 $ rolloutTree (zipperTree zipper) (zipperGen zipper)
     player = (Just (playerIndex $ treeState $ zipperTree $ zipper))
+    updated_zipper = (ZipperConstructor (zipperTree $ zipper) (zipperCrumbs $ zipper) (trd3 $ rolloutTree (zipperTree zipper) (zipperGen zipper)))-}
+    updated_score = 
+        if (isWin $ snd3 $ rolloutTree (zipperTree zipper) (zipperGen zipper)) then getPointsFromOutcome $ snd3 $ rolloutTree (zipperTree zipper) (zipperGen zipper)
+            else (getPointsFromOutcome $ snd3 $ rolloutTree (zipperTree zipper) (zipperGen zipper)) / (fromIntegral $ maxPlayers $ treeState $ zipperTree $ zipper)
+    player = 
+        if (isWin $ snd3 $ rolloutTree (zipperTree zipper) (zipperGen zipper)) then (Just (playerIndex $ treeState $ zipperTree $ zipper))
+            else Nothing
     updated_zipper = (ZipperConstructor (zipperTree $ zipper) (zipperCrumbs $ zipper) (trd3 $ rolloutTree (zipperTree zipper) (zipperGen zipper)))
+
 
 
 {-
