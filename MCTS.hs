@@ -59,10 +59,17 @@ data Zipper s a = ZipperConstructor {current_tree :: Tree s a
 
     Instanțiați clasa `Show` cu tipul `Tree s a`.
 -}
-space :: Int -> String
+{-space :: Int -> String
 space level
     | level == 0 = ""
-    | otherwise = " " ++ (space (level - 1))
+    | otherwise = " " ++ (space (level - 1))-}
+
+space :: Int -> String
+space level = until (test_function) (do_function) "" where
+    do_function :: String -> String
+    do_function s = s ++ " "
+    test_function :: String -> Bool
+    test_function string = length string /= level
 
 instance (Show s, Show a) => Show (Tree s a) where
     show tree = (showing_func 0 tree True) where
@@ -250,9 +257,9 @@ getZipper tree random_generator = ZipperConstructor tree [] random_generator
 
     Verifică dacă zipper-ul este centrat pe rădăcina arborelui.
 -}
+{-isRoot (ZipperConstructor { crumb = [] })  = True-}
 isRoot :: Zipper s a -> Bool
-isRoot (ZipperConstructor { crumb = [] })  = True
-isRoot _ = False
+isRoot zipper = not $ null $ filter (\x -> null x) [zipperCrumbs $ zipper]
 
 
 {-

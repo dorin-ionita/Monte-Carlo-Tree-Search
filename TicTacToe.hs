@@ -122,11 +122,14 @@ instance Show Board where
     Instanțiați clasa `GameBoard` cu tipurile `Board` și `Cell`.
 -}
 instance GameState Board Cell where
-    -- playerIndex :: Board -> Int
-    playerIndex = undefined
+    --playerIndex :: Board -> Int
+    playerIndex (BoardConstructor X _ _ _ _ _ _ _ _ _ ) = 1
+    playerIndex (BoardConstructor O _ _ _ _ _ _ _ _ _ ) = 0
+    --playerIndex tz = tz
+    --playerIndex (Cell x) = x 
 
     -- maxPlayers :: Board -> Int
-    maxPlayers = undefined
+    maxPlayers _ = 2
 
     -- successors :: Board -> [(Cell, Board)]
     successors = undefined
@@ -151,7 +154,96 @@ initialBoard = (BoardConstructor X Nothing Nothing Nothing Nothing Nothing Nothi
     Ordinea celulelor este explicată la funcția `boardConfiguration`.
 -}
 place :: Cell -> Board -> Maybe Board
-place = undefined
+place 1 board = Just $ (BoardConstructor (otherPlayer $ boardPlayer $ board) 
+                                 (Just (boardPlayer $ board))
+                                 (getSquare2 $ board)
+                                 (getSquare3 $ board)
+                                 (getSquare4 $ board)
+                                 (getSquare5 $ board)
+                                 (getSquare6 $ board)
+                                 (getSquare7 $ board)
+                                 (getSquare8 $ board)
+                                 (getSquare9 $ board))
+place 2 board = Just $ (BoardConstructor (otherPlayer $ boardPlayer $ board) 
+                                 (getSquare1 $ board)
+                                 (Just (boardPlayer $ board))
+                                 (getSquare3 $ board)
+                                 (getSquare4 $ board)
+                                 (getSquare5 $ board)
+                                 (getSquare6 $ board)
+                                 (getSquare7 $ board)
+                                 (getSquare8 $ board)
+                                 (getSquare9 $ board))
+place 3 board = Just $ (BoardConstructor (otherPlayer $ boardPlayer $ board) 
+                                 (getSquare1 $ board)
+                                 (getSquare2 $ board)
+                                 (Just (boardPlayer $ board))
+                                 (getSquare4 $ board)
+                                 (getSquare5 $ board)
+                                 (getSquare6 $ board)
+                                 (getSquare7 $ board)
+                                 (getSquare8 $ board)
+                                 (getSquare9 $ board))
+place 4 board = Just $ (BoardConstructor (otherPlayer $ boardPlayer $ board) 
+                                 (getSquare1 $ board)
+                                 (getSquare2 $ board)
+                                 (getSquare3 $ board)
+                                 (Just (boardPlayer $ board))
+                                 (getSquare5 $ board)
+                                 (getSquare6 $ board)
+                                 (getSquare7 $ board)
+                                 (getSquare8 $ board)
+                                 (getSquare9 $ board))
+place 5 board = Just $ (BoardConstructor (otherPlayer $ boardPlayer $ board) 
+                                 (getSquare1 $ board)
+                                 (getSquare2 $ board)
+                                 (getSquare3 $ board)
+                                 (getSquare4 $ board)
+                                 (Just (boardPlayer $ board))
+                                 (getSquare6 $ board)
+                                 (getSquare7 $ board)
+                                 (getSquare8 $ board)
+                                 (getSquare9 $ board))
+place 6 board = Just $ (BoardConstructor (otherPlayer $ boardPlayer $ board) 
+                                 (getSquare1 $ board)
+                                 (getSquare2 $ board)
+                                 (getSquare3 $ board)
+                                 (getSquare4 $ board)
+                                 (getSquare5 $ board)
+                                 (Just (boardPlayer $ board))
+                                 (getSquare7 $ board)
+                                 (getSquare8 $ board)
+                                 (getSquare9 $ board))
+place 7 board = Just $ (BoardConstructor (otherPlayer $ boardPlayer $ board) 
+                                 (getSquare1 $ board)
+                                 (getSquare2 $ board)
+                                 (getSquare3 $ board)
+                                 (getSquare4 $ board)
+                                 (getSquare5 $ board)
+                                 (getSquare6 $ board)
+                                 (Just (boardPlayer $ board))
+                                 (getSquare8 $ board)
+                                 (getSquare9 $ board))
+place 8 board = Just $ (BoardConstructor (otherPlayer $ boardPlayer $ board) 
+                                 (getSquare1 $ board)
+                                 (getSquare2 $ board)
+                                 (getSquare3 $ board)
+                                 (getSquare4 $ board)
+                                 (getSquare5 $ board)
+                                 (getSquare6 $ board)
+                                 (getSquare7 $ board)
+                                 (Just (boardPlayer $ board))
+                                 (getSquare9 $ board))
+place 9 board = Just $ (BoardConstructor (otherPlayer $ boardPlayer $ board) 
+                                 (getSquare1 $ board)
+                                 (getSquare2 $ board)
+                                 (getSquare3 $ board)
+                                 (getSquare4 $ board)
+                                 (getSquare5 $ board)
+                                 (getSquare6 $ board)
+                                 (getSquare7 $ board)
+                                 (getSquare8 $ board)
+                                 (Just (boardPlayer $ board)))
 
 {-
     *** TODO ***
