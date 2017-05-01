@@ -140,7 +140,7 @@ instance GameState Board Cell where
     Tabla inițială de joc. X mută primul.
 -}
 initialBoard :: Board
-initialBoard = undefined
+initialBoard = (BoardConstructor X Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing)
 
 {-
     *** TODO ***
