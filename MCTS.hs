@@ -264,7 +264,7 @@ ucb1 :: Float  -- scorul copilului                      // v mediu din formula
      -> Int    -- numărul de vizitări ale copilului     // n mic din formula
      -> Int    -- numărul de vizitări ale părintelui    // N mare din formula
      -> Float  -- estimarea                             // valoarea lui ucb1
-ucb1 v_mean small_n big_n = (v_mean / (fromIntegral $ small_n))+ c * (sqrt ((log $ fromIntegral $ big_n) / (fromIntegral small_n))) where c = 2
+ucb1 scor visits parent_visits = (scor / (fromIntegral $ visits))+ c * (sqrt ((log $ fromIntegral $ parent_visits) / (fromIntegral visits))) where c = 2.0
 
 ucb1_wrapper :: (Float, Int, Int) -> Float
 ucb1_wrapper (a, b, c) = ucb1 a b c 
@@ -283,8 +283,8 @@ order_function :: Int -> Tree s a -> Tree s a -> Ordering
 order_function visits_parent tree1 tree2
     | ((treeVisits tree1) == 0) = GT
     | ((treeVisits tree2) == 0) = LT
-    | ucb1 (treeScore tree1) (treeVisits tree2) visits_parent > ucb1 (treeScore tree2) (treeVisits tree2) visits_parent = GT
-    | ucb1 (treeScore tree1) (treeVisits tree2) visits_parent < ucb1 (treeScore tree2) (treeVisits tree2) visits_parent = LT
+    | ucb1 (treeScore tree1) (treeVisits tree1) visits_parent > ucb1 (treeScore tree2) (treeVisits tree2) visits_parent = GT
+    | ucb1 (treeScore tree1) (treeVisits tree1) visits_parent < ucb1 (treeScore tree2) (treeVisits tree2) visits_parent = LT
     | otherwise = EQ
 
 instance Eq s => Eq (Tree s a) where
