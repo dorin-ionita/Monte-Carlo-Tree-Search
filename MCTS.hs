@@ -462,17 +462,30 @@ backProp scor player zipper =
 backPropConverter :: GameState s a => (Float, Maybe Int, Zipper s a) -> Zipper s a
 backPropConverter (x, y, z) = backProp x y z 
 
+exploreOne_help :: (Eq s, GameState s a) => [Zipper s a] -> [Zipper s a]
+exploreOne_help zippers_list = map (\zipper -> backPropConverter $ rolloutZipper $ traverse $ zipper) zippers_list
+
 exploreOne :: (Eq s, GameState s a) => Zipper s a -> Zipper s a
-exploreOne zipper = backPropConverter $ rolloutZipper $ traverse $ zipper
+exploreOne zipper = (exploreOne_help [zipper]) !! 0
+
+{-exploreOne :: (Eq s, GameState s a) => Zipper s a -> Zipper s a
+exploreOne zipper = backPropConverter $ rolloutZipper $ traverse $ zipper-}
 
 {-
     *** TODO ***
 
     Realizează un număr dat de iterații complete ale MCTS.
 -}
-exploreMany :: (Eq s, GameState s a) => Int -> Zipper s a -> Zipper s a
+{-exploreMany :: (Eq s, GameState s a) => Int -> Zipper s a -> Zipper s a
 exploreMany 0 zipper = zipper
-exploreMany x zipper = exploreMany (x - 1) $ exploreOne zipper
+exploreMany x zipper = exploreMany (x - 1) $ exploreOne zipper-}
+
+exploreMany :: (Eq s, GameState s a) => Int -> Zipper s a -> Zipper s a
+exploreMany times zipper = snd $ until (test_function) (do_function) (times, zipper) where
+    do_function :: (Eq s, GameState s a) => (Int, Zipper s a) -> (Int, Zipper s a)
+    do_function (many, zipper) = (many - 1, exploreOne zipper)
+    test_function :: (Eq s, GameState s a) => (Int , Zipper s a) -> Bool
+    test_function (many, zipper) = many == 0
 
 {-
     *** TODO ***
