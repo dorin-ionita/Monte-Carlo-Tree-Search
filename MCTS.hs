@@ -257,9 +257,14 @@ getZipper tree random_generator = ZipperConstructor tree [] random_generator
 
     Verifică dacă zipper-ul este centrat pe rădăcina arborelui.
 -}
-{-isRoot (ZipperConstructor { crumb = [] })  = True-}
+
 isRoot :: Zipper s a -> Bool
-isRoot zipper = not $ null $ filter (\x -> null x) [zipperCrumbs $ zipper]
+isRoot (ZipperConstructor { crumb = [] })  = True
+isRoot _ = False
+
+{-isRoot :: Zipper s a -> Bool
+isRoot zipper = not $ null $ filter (\x -> null x) [zipperCrumbs $ zipper]-}
+-- Varianta cu functionala filter
 
 
 {-
@@ -462,14 +467,15 @@ backProp scor player zipper =
 backPropConverter :: GameState s a => (Float, Maybe Int, Zipper s a) -> Zipper s a
 backPropConverter (x, y, z) = backProp x y z 
 
-exploreOne_help :: (Eq s, GameState s a) => [Zipper s a] -> [Zipper s a]
+{-exploreOne_help :: (Eq s, GameState s a) => [Zipper s a] -> [Zipper s a]
 exploreOne_help zippers_list = map (\zipper -> backPropConverter $ rolloutZipper $ traverse $ zipper) zippers_list
 
 exploreOne :: (Eq s, GameState s a) => Zipper s a -> Zipper s a
-exploreOne zipper = (exploreOne_help [zipper]) !! 0
+exploreOne zipper = (exploreOne_help [zipper]) !! 0-}
+--varianta cu functionala map
 
-{-exploreOne :: (Eq s, GameState s a) => Zipper s a -> Zipper s a
-exploreOne zipper = backPropConverter $ rolloutZipper $ traverse $ zipper-}
+exploreOne :: (Eq s, GameState s a) => Zipper s a -> Zipper s a
+exploreOne zipper = backPropConverter $ rolloutZipper $ traverse $ zipper
 
 {-
     *** TODO ***
