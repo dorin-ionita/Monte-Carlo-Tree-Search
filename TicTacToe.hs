@@ -46,6 +46,7 @@ data Board = BoardConstructor { player_to_move :: Player
     
     deriving Eq
 
+
 getSquare1 :: Board -> Maybe Player
 getSquare1 (BoardConstructor {square_1 = sq}) = sq
 
@@ -87,7 +88,7 @@ getSquare9 (BoardConstructor {square_9 = sq}) = sq
 -}
 boardConfiguration :: Board -> [Maybe Player]
 boardConfiguration board = [getSquare7 $ board,
-                            getSquare9 $ board,
+                            getSquare8 $ board,
                             getSquare9 $ board,
                             getSquare4 $ board,
                             getSquare5 $ board,
@@ -109,8 +110,11 @@ boardPlayer (BoardConstructor {player_to_move = pl}) = pl
 
     Instanțiați clasa `Show` cu tipul `Board`.
 -}
+
 instance Show Board where
-    show = undefined
+    show board = "\n|" ++ show (take 3 $ boardConfiguration $ board) ++ 
+                 "\n|" ++ show (take 3 $ drop 3 $ boardConfiguration $ board) ++
+                 "\n|" ++ show (take 3 $ drop 6 $ boardConfiguration $ board) 
 
 {-
     *** TODO ***
