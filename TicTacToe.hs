@@ -31,8 +31,47 @@ otherPlayer O = X
     Tipul stării jocului. Ar trebui să conțină informații despre tablă
     și despre jucătorul care urmează să mute.
 -}
-data Board = UndefinedBoard
+
+data Board = BoardConstructor { player_to_move :: Player
+                                , square_1 :: Maybe Player
+                                , square_2 :: Maybe Player
+                                , square_3 :: Maybe Player
+                                , square_4 :: Maybe Player
+                                , square_5 :: Maybe Player
+                                , square_6 :: Maybe Player
+                                , square_7 :: Maybe Player
+                                , square_8 :: Maybe Player
+                                , square_9 :: Maybe Player
+                                } 
+    
     deriving Eq
+
+getSquare1 :: Board -> Maybe Player
+getSquare1 (BoardConstructor {square_1 = sq}) = sq
+
+getSquare2 :: Board -> Maybe Player
+getSquare2 (BoardConstructor {square_2 = sq}) = sq
+
+getSquare3 :: Board -> Maybe Player
+getSquare3 (BoardConstructor {square_3 = sq}) = sq
+
+getSquare4 :: Board -> Maybe Player
+getSquare4 (BoardConstructor {square_4 = sq}) = sq
+
+getSquare5 :: Board -> Maybe Player
+getSquare5 (BoardConstructor {square_5 = sq}) = sq
+
+getSquare6 :: Board -> Maybe Player
+getSquare6 (BoardConstructor {square_6 = sq}) = sq
+
+getSquare7 :: Board -> Maybe Player
+getSquare7 (BoardConstructor {square_7 = sq}) = sq
+
+getSquare8 :: Board -> Maybe Player
+getSquare8 (BoardConstructor {square_8 = sq}) = sq
+
+getSquare9 :: Board -> Maybe Player
+getSquare9 (BoardConstructor {square_9 = sq}) = sq
 
 {-
     *** TODO ***
@@ -47,7 +86,15 @@ data Board = UndefinedBoard
     123
 -}
 boardConfiguration :: Board -> [Maybe Player]
-boardConfiguration = undefined
+boardConfiguration board = [getSquare7 $ board,
+                            getSquare9 $ board,
+                            getSquare9 $ board,
+                            getSquare4 $ board,
+                            getSquare5 $ board,
+                            getSquare6 $ board,
+                            getSquare1 $ board,
+                            getSquare2 $ board,
+                            getSquare3 $ board]
 
 {-
     *** TODO ***
@@ -55,7 +102,7 @@ boardConfiguration = undefined
     Întoarce jucătorul care urmează să mute.
 -}
 boardPlayer :: Board -> Player
-boardPlayer = undefined
+boardPlayer (BoardConstructor {player_to_move = pl}) = pl
 
 {-
     *** TODO ***
